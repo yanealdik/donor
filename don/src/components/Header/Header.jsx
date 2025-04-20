@@ -1,9 +1,27 @@
-import { useState } from 'react';
+// src/components/Header/Header.jsx
+import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
+import Auth from '../Auth/Auth';
+import UserMenu from '../UserMenu/UserMenu';
+import { useAuth } from '../../services/authService';
 
 const Header = () => {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const openAuthModal = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -51,7 +69,19 @@ const Header = () => {
             </li>
           </ul>
         </nav>
+        
+        <div className="auth-container">
+          {isAuthenticated ? (
+            <UserMenu user={user} onLogout={handleLogout} />
+          ) : (
+            <button className="auth-button" onClick={openAuthModal}>
+              Войти / Регистрация
+            </button>
+          )}
+        </div>
       </div>
+      
+      <Auth isOpen={isAuthModalOpen} onClose={closeAuthModal} />
     </header>
   );
 };
